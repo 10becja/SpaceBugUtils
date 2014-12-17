@@ -1,0 +1,5 @@
+name: SpaceBugUtils
+version: 1.0
+main: me.becja10.SpaceBugUtils.Main
+softdepend: [Essentials]
+description: Additional Utilities for play.minecraft.dk
