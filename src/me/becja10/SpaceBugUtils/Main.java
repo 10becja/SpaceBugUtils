@@ -9,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -42,9 +44,32 @@ public class Main extends JavaPlugin implements Listener
 			if (p.getLocation().getBlockY() > 127)
 			{
 				p.performCommand("spawn");
-				p.performCommand("mail send 10becja AUTOMATED above the nether");
+				p.performCommand("mail send 10becja AUTO above the nether " + p.getLocation().getBlockX() + " " + p.getLocation().getBlockZ());
 				p.sendMessage(ChatColor.RED + "Going above the Nether ceiling is NOT allowed");
+				this.logger.info("[SpaceBugUtils] "+ p.getName() + " was prevented from going above nether.");
 			}
 		}
+	}
+	
+	//prevent players using too many caps, or spamming chat
+	@EventHandler(priority=EventPriority.LOWEST)
+	public void onChat(AsyncPlayerChatEvent event)
+	{
+		//don't lower mods/admins
+		if(event.getPlayer().hasPermission("spacebugutils.chat")) return;
+		String msg = event.getMessage();
+		//loop over msg and count caps
+		int caps = 0;
+		int low = 0;
+		for(Character c : msg.toCharArray())
+		{
+			if(Character.isUpperCase(c)) 
+				caps++;
+			else
+				low++;
+		}
+		//if more than half the characters are caps, make them lower case
+		if ((double) caps/low > 1 && msg.length() > 5)
+			event.setMessage(msg.toLowerCase());
 	}
 }
