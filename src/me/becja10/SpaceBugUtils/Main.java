@@ -2,15 +2,16 @@ package me.becja10.SpaceBugUtils;
 
 import java.util.logging.Logger;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,6 +31,38 @@ public class Main extends JavaPlugin implements Listener
 	{
 		PluginDescriptionFile pdfFile = getDescription();
 		this.logger.info(pdfFile.getName() + " Has Been Disabled!");
+	}
+	
+	@SuppressWarnings("deprecation")
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
+	{
+		//silentTP
+		if(cmd.getName().equalsIgnoreCase("silenttp"))
+		{
+			if(!(sender instanceof Player))
+				sender.sendMessage("This command can only be run by a player.");
+			else
+			{
+				Player p = (Player) sender;
+				switch (args.length)
+				{
+				case 1: //proper amount of players sent
+					//make sure the target is online/real
+					Player tar = Bukkit.getPlayer(args[0]);
+					if(tar == null)
+						p.sendMessage(ChatColor.RED+"Player not found.");
+					else
+					{
+						tar.teleport(p.getLocation());
+						p.sendMessage("Very sneaky");
+					}
+					break;
+				default: //they screwed up.
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
   

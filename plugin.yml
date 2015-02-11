@@ -1,5 +1,9 @@
 name: SpaceBugUtils
-version: 2.0
+version: 2.1
 main: me.becja10.SpaceBugUtils.Main
 softdepend: [Essentials]
 description: Additional Utilities for play.minecraft.dk
+commands:
+  silenttp:
+    description: teleports someone to you without alerting them (used for AFK cheaters)
+    usage: /<command> [player]
