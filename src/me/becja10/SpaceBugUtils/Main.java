@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,7 +12,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,7 +36,6 @@ public class Main extends JavaPlugin implements Listener
 		this.logger.info(pdfFile.getName() + " Has Been Disabled!");
 	}
 	
-	@SuppressWarnings("deprecation")
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
 	{
 		//silentTP
@@ -65,6 +67,19 @@ public class Main extends JavaPlugin implements Listener
 		return true;
 	}
 
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onClick(PlayerInteractEvent event)
+	{
+		Player p = event.getPlayer();
+		if(p.hasPermission("spacebugutils.changespawner")) return;
+		
+		Material inHand = p.getItemInHand().getType();
+		//prevent players changing mob spanwers
+		if(inHand == Material.MONSTER_EGG || inHand == Material.MONSTER_EGGS)
+			if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
+				if(event.getClickedBlock().getType() == Material.MOB_SPAWNER)
+					event.setCancelled(true);
+	}
   
 	//prevent players from going above the nether
 	@EventHandler(priority=EventPriority.HIGHEST)
