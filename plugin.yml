@@ -7,3 +7,9 @@ commands:
   silenttp:
     description: teleports someone to you without alerting them (used for AFK cheaters)
     usage: /<command> [player]
+  onlinelongest:
+    description: sorts the TAB list 
+    usage: /<command>
+  sbureload:
+    description: reloads the plugin
+    usage: /<command>
