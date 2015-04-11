@@ -16,34 +16,38 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.Dispenser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class Main extends JavaPlugin implements Listener
+public class SpaceBugUtils extends JavaPlugin implements Listener
 {
 	public final Logger logger = Logger.getLogger("Minecraft");
-	private static Main plugin;
+	private static SpaceBugUtils plugin;
 	private Player lastAttacker;
 	private Entity dragon;
 
@@ -66,18 +70,66 @@ public class Main extends JavaPlugin implements Listener
 		this.logger.info(pdfFile.getName() + " Has Been Disabled!");
 	}
 	
+	@EventHandler
+	public void onDispense(BlockDispenseEvent event)
+	{
+		Block block = event.getBlock();
+		if(block.getState() instanceof Dispenser)
+		{
+			Dispenser dis = (Dispenser)block.getState();
+			Inventory inv = dis.getInventory();
+			for(int i = 0; i < inv.getSize(); i++)
+			{
+				ItemStack stack = inv.getItem(i);
+				if(stack != null && stack.getAmount() < 0)
+				{
+					inv.setItem(i, new ItemStack(Material.AIR));
+					event.setCancelled(true);
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onOpenInv(InventoryOpenEvent event)
+	{
+		for(int i = 0; i < event.getInventory().getSize(); i++)
+		{
+			ItemStack stack = event.getInventory().getItem(i);
+			if(stack != null && stack.getAmount() <= 0)
+			{
+				event.getInventory().setItem(i, new ItemStack(Material.AIR));
+				event.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onClickInv(InventoryClickEvent event)
+	{
+		for(int i = 0; i < event.getInventory().getSize(); i++)
+		{
+			ItemStack stack = event.getInventory().getItem(i);
+			if(stack != null && stack.getAmount() <= 0)
+			{
+				event.getInventory().setItem(i, new ItemStack(Material.AIR));
+				event.setCancelled(true);
+			}
+		}
+	}
+	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onJoin(PlayerJoinEvent event)
 	{
-		joined.put(event.getPlayer().getDisplayName(), System.currentTimeMillis());
-		list.add(event.getPlayer().getDisplayName());
+		joined.put(event.getPlayer().getName(), System.currentTimeMillis());
+		list.add(event.getPlayer().getName());
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onQuite(PlayerQuitEvent event)
 	{
-		joined.remove(event.getPlayer().getDisplayName());
-		list.remove(event.getPlayer().getDisplayName());
+		joined.remove(event.getPlayer().getName());
+		list.remove(event.getPlayer().getName());
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
@@ -92,6 +144,12 @@ public class Main extends JavaPlugin implements Listener
 				long curTime = System.currentTimeMillis();
 				for(String p : list)
 				{
+					//if this player is no longer online, remove from list
+					if(Bukkit.getPlayer(p) == null)
+					{
+						list.remove(p);
+						continue;
+					}
 					Integer t = (int) (curTime - joined.get(p))/1000;
 					
 					String time = "";
@@ -223,25 +281,6 @@ public class Main extends JavaPlugin implements Listener
 			slayer.sendMessage(ChatColor.GOLD+"Stay your weapon, slayer. Allow someone else to kill the beast!");
 			event.setDamage(0);; //hopefully this will prevent mcMMO from interferring.
 			event.setCancelled(true);
-		}
-	}
-  
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onCraft(PrepareItemCraftEvent event)
-	{
-		//don't care about anything other than banners right now
-		if(event.getRecipe().getResult().getType() != Material.BANNER) return;
-		int banners = 0; //track how many banners are being used to craft
-		for(ItemStack i : event.getInventory().getMatrix())
-			if(i != null && i.getType() == Material.BANNER)
-				banners++;
-		//0 == crafting blank banner; 2 == copying banner
-		if(!(banners == 0 || banners == 2))
-		{
-			event.getInventory().setResult(new ItemStack(Material.AIR)); //set the result to air
-			for(HumanEntity p : event.getViewers())
-				if(p instanceof Player)
-					p.sendMessage(ChatColor.RED + "Special banners can not be crafted, you must earn them!");
 		}
 	}
 	

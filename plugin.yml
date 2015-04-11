@@ -1,6 +1,6 @@
 name: SpaceBugUtils
 version: 2.1
-main: me.becja10.SpaceBugUtils.Main
+main: me.becja10.SpaceBugUtils.SpaceBugUtils
 softdepend: [Essentials]
 description: Additional Utilities for play.minecraft.dk
 commands:
@@ -10,6 +10,7 @@ commands:
   onlinelongest:
     description: sorts the TAB list 
     usage: /<command>
+    aliases: [ol]
   sbureload:
     description: reloads the plugin
     usage: /<command>
