@@ -13,6 +13,7 @@ import me.becja10.SpaceBugUtils.FileManager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -209,6 +210,22 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 			{
 				FileManager.reloadPlayers();
 				//loadConfig();
+			}
+		}
+		
+		//sbs
+		else if(cmd.getName().equalsIgnoreCase("sbspectate"))
+		{
+			if((sender instanceof Player) && (sender.hasPermission("spacebugutils.spectate")))
+			{
+				Player p = (Player)sender;
+				GameMode mode = (p.getGameMode() == GameMode.SURVIVAL) ? GameMode.SPECTATOR : GameMode.SURVIVAL;
+				p.setGameMode(mode);
+				p.sendMessage(ChatColor.GREEN+"You are now in "+ mode.toString());
+			}
+			else
+			{
+				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
 			}
 		}
 		return true;

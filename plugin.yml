@@ -1,5 +1,5 @@
 name: SpaceBugUtils
-version: 2.1
+version: 3.0
 main: me.becja10.SpaceBugUtils.SpaceBugUtils
 softdepend: [Essentials]
 description: Additional Utilities for play.minecraft.dk
@@ -14,3 +14,7 @@ commands:
   sbureload:
     description: reloads the plugin
     usage: /<command>
+  sbspectate:
+    description: Toggles spectate mode on or off
+    usage: /<command>
+    aliases: [sbs]
