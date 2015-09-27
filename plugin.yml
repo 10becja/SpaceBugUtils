@@ -18,3 +18,7 @@ commands:
     description: Toggles spectate mode on or off
     usage: /<command>
     aliases: [sbs]
+  sbnick:
+    description: Changes someone's nickname.
+    usage: /<command> <target> <nickname>
+    aliases: [sbn]

@@ -228,6 +228,43 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
 			}
 		}
+		
+		//sbnick
+		else if(cmd.getName().equalsIgnoreCase("sbnick"))
+		{
+			if((sender instanceof Player) && (sender.hasPermission("spacebugutils.canusenick")))
+			{
+				if(args.length != 2)
+					return false;
+				Player target = Bukkit.getPlayer(args[0]);
+				String nick = args[1];
+				
+				if(nick.length() > 15)
+					sender.sendMessage(ChatColor.RED + "Nickname is too long!");
+				
+				else if(!target.hasPermission("spacebugutils.nickname") && !nick.equalsIgnoreCase("off"))
+					sender.sendMessage(ChatColor.RED + target.getName() + " hasn't purchased a name change.");
+				
+				else
+				{
+					String nickcmd = "nick " + target.getName() + " " + nick;
+					String pexcmd = "pex user " + target.getName() + " remove spacebugutils.nickname";
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), nickcmd);
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), pexcmd);
+					
+					String doneMsg = (nick.equalsIgnoreCase("off")) 
+							? "Removed " + target.getName() + "'s nickname"
+							: target.getName() + "'s nickname is now " + nick;
+					
+					sender.sendMessage(ChatColor.GREEN + doneMsg);
+				}
+				
+			}
+			else
+			{
+				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
+			}
+		}
 		return true;
 	}
 
