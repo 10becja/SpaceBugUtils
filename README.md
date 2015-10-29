@@ -20,6 +20,7 @@ Commands:
   
 /sbspectate</br>
 &nbsp;&nbsp;&nbsp;&nbsp;toggles between spectate and survival mode</br>
+&nbsp;&nbsp;&nbsp;&nbsp;**/sbs**
 &nbsp;&nbsp;&nbsp;&nbsp;*spacebugutils.spectate*</br>
   
 /sbnick (player) (nickname)</br>
