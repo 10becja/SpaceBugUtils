@@ -274,9 +274,11 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 		Player p = event.getPlayer();
 		if(p.hasPermission("spacebugutils.changespawner")) return;
 		
-		Material inHand = p.getItemInHand().getType();
+		Material inHand = p.getInventory().getItemInMainHand().getType();
+		Material offHand = p.getInventory().getItemInOffHand().getType();
 		//prevent players changing mob spanwers
-		if(inHand == Material.MONSTER_EGG || inHand == Material.MONSTER_EGGS)
+		if(inHand == Material.MONSTER_EGG || inHand == Material.MONSTER_EGGS ||
+		   offHand == Material.MONSTER_EGG || offHand == Material.MONSTER_EGGS)
 			if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
 				if(event.getClickedBlock().getType() == Material.MOB_SPAWNER)
 					event.setCancelled(true);
