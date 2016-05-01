@@ -1,8 +1,5 @@
 package me.becja10.SpaceBugUtils;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,17 +18,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -49,8 +41,8 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 {
 	public final Logger logger = Logger.getLogger("Minecraft");
 	private static SpaceBugUtils plugin;
-	private Player lastAttacker;
-	private Entity dragon;
+//	private Player lastAttacker;
+//	private Entity dragon;
 
 	private Map<String, Long> joined = new HashMap<String, Long>();
 	private List<String> list = new LinkedList<String>();
@@ -127,7 +119,7 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 	}
 	
 	@EventHandler(priority=EventPriority.LOWEST)
-	public void onQuite(PlayerQuitEvent event)
+	public void onQuit(PlayerQuitEvent event)
 	{
 		joined.remove(event.getPlayer().getName());
 		list.remove(event.getPlayer().getName());
@@ -284,61 +276,61 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 					event.setCancelled(true);
 	}
 	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onEntityDeath(EntityDeathEvent event)
-	{
-		//only care about dragons
-		if(event.getEntityType() != EntityType.ENDER_DRAGON) return;
-		//make sure this is the same dragon that just got attacked. Should never not be the case, but whatevs
-		if(!dragon.equals(event.getEntity())) return;
-		
-		//get the last attacker of the dragon (the one that caused the death)
-		Player slayer = lastAttacker;
-		
-		String id = slayer.getUniqueId().toString();
-		DateFormat dateformat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		Date date = new Date();
-		
-		FileManager.getPlayers().set(id+".name", slayer.getName());
-		FileManager.getPlayers().set(id+".on", dateformat.format(date));
-		FileManager.savePlayers();
-		
-		slayer.sendMessage(ChatColor.GOLD+"Congratulations on slaying the dragon!");
-	}
+//	@EventHandler(priority=EventPriority.HIGHEST)
+//	public void onEntityDeath(EntityDeathEvent event)
+//	{
+//		//only care about dragons
+//		if(event.getEntityType() != EntityType.ENDER_DRAGON) return;
+//		//make sure this is the same dragon that just got attacked. Should never not be the case, but whatevs
+//		if(!dragon.equals(event.getEntity())) return;
+//		
+//		//get the last attacker of the dragon (the one that caused the death)
+//		Player slayer = lastAttacker;
+//		
+//		String id = slayer.getUniqueId().toString();
+//		DateFormat dateformat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+//		Date date = new Date();
+//		
+//		FileManager.getPlayers().set(id+".name", slayer.getName());
+//		FileManager.getPlayers().set(id+".on", dateformat.format(date));
+//		FileManager.savePlayers();
+//		
+//		slayer.sendMessage(ChatColor.GOLD+"Congratulations on slaying the dragon!");
+//	}
 	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onHarm(EntityDamageByEntityEvent event)
-	{
-		//only care about dragons
-		if(event.getEntityType() != EntityType.ENDER_DRAGON) return;
-		dragon = event.getEntity();
-		Player slayer = null;
-		
-		//check if the player is damaging directly
-		if(event.getDamager() instanceof Player)
-			slayer = (Player)event.getDamager();
-		
-		//check if it was an arrow fired by a player
-		else if (event.getDamager() instanceof Arrow)
-		{
-			Arrow arrow = (Arrow)event.getDamager();
-			if(arrow.getShooter() instanceof Player)
-				slayer = (Player)arrow.getShooter();
-		}
-		
-		//wasn't a player who damaged the dragon
-		if(slayer == null) return;
-		
-		//see if they've killed the dragon before
-		String id = slayer.getUniqueId().toString();
-		lastAttacker = slayer;
-		if(FileManager.getPlayers().contains(id))
-		{
-			slayer.sendMessage(ChatColor.GOLD+"Stay your weapon, slayer. Allow someone else to kill the beast!");
-			event.setDamage(0);; //hopefully this will prevent mcMMO from interferring.
-			event.setCancelled(true);
-		}
-	}
+//	@EventHandler(priority=EventPriority.HIGHEST)
+//	public void onHarm(EntityDamageByEntityEvent event)
+//	{
+//		//only care about dragons
+//		if(event.getEntityType() != EntityType.ENDER_DRAGON) return;
+//		dragon = event.getEntity();
+//		Player slayer = null;
+//		
+//		//check if the player is damaging directly
+//		if(event.getDamager() instanceof Player)
+//			slayer = (Player)event.getDamager();
+//		
+//		//check if it was an arrow fired by a player
+//		else if (event.getDamager() instanceof Arrow)
+//		{
+//			Arrow arrow = (Arrow)event.getDamager();
+//			if(arrow.getShooter() instanceof Player)
+//				slayer = (Player)arrow.getShooter();
+//		}
+//		
+//		//wasn't a player who damaged the dragon
+//		if(slayer == null) return;
+//		
+//		//see if they've killed the dragon before
+//		String id = slayer.getUniqueId().toString();
+//		lastAttacker = slayer;
+//		if(FileManager.getPlayers().contains(id))
+//		{
+//			slayer.sendMessage(ChatColor.GOLD+"Stay your weapon, slayer. Allow someone else to kill the beast!");
+//			event.setDamage(0);; //hopefully this will prevent mcMMO from interferring.
+//			event.setCancelled(true);
+//		}
+//	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerMove(PlayerMoveEvent event)
