@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import me.becja10.SpaceBugUtils.FileManager;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -18,12 +16,20 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.block.BlockFadeEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -41,8 +47,6 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 {
 	public final Logger logger = Logger.getLogger("Minecraft");
 	private static SpaceBugUtils plugin;
-//	private Player lastAttacker;
-//	private Entity dragon;
 
 	private Map<String, Long> joined = new HashMap<String, Long>();
 	private List<String> list = new LinkedList<String>();
@@ -53,8 +57,6 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 		this.logger.info(pdfFile.getName() + " Version " + pdfFile.getVersion() + " Has Been Enabled!");
 		getServer().getPluginManager().registerEvents(this, this);
 		plugin = this;
-	    FileManager.saveDefaultPlayers();
-
 	}
 
 	public void onDisable()
@@ -200,9 +202,8 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 					sender.sendMessage(ChatColor.DARK_RED+"No permission.");
 			else
 			{
-				FileManager.reloadPlayers();
-				//loadConfig();
-			}
+				
+ 			}
 		}
 		
 		//sbs
@@ -276,61 +277,50 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 					event.setCancelled(true);
 	}
 	
-//	@EventHandler(priority=EventPriority.HIGHEST)
-//	public void onEntityDeath(EntityDeathEvent event)
-//	{
-//		//only care about dragons
-//		if(event.getEntityType() != EntityType.ENDER_DRAGON) return;
-//		//make sure this is the same dragon that just got attacked. Should never not be the case, but whatevs
-//		if(!dragon.equals(event.getEntity())) return;
-//		
-//		//get the last attacker of the dragon (the one that caused the death)
-//		Player slayer = lastAttacker;
-//		
-//		String id = slayer.getUniqueId().toString();
-//		DateFormat dateformat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-//		Date date = new Date();
-//		
-//		FileManager.getPlayers().set(id+".name", slayer.getName());
-//		FileManager.getPlayers().set(id+".on", dateformat.format(date));
-//		FileManager.savePlayers();
-//		
-//		slayer.sendMessage(ChatColor.GOLD+"Congratulations on slaying the dragon!");
-//	}
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onPlace(BlockPlaceEvent event)
+	{
+		System.out.println("place");
+	}
 	
-//	@EventHandler(priority=EventPriority.HIGHEST)
-//	public void onHarm(EntityDamageByEntityEvent event)
-//	{
-//		//only care about dragons
-//		if(event.getEntityType() != EntityType.ENDER_DRAGON) return;
-//		dragon = event.getEntity();
-//		Player slayer = null;
-//		
-//		//check if the player is damaging directly
-//		if(event.getDamager() instanceof Player)
-//			slayer = (Player)event.getDamager();
-//		
-//		//check if it was an arrow fired by a player
-//		else if (event.getDamager() instanceof Arrow)
-//		{
-//			Arrow arrow = (Arrow)event.getDamager();
-//			if(arrow.getShooter() instanceof Player)
-//				slayer = (Player)arrow.getShooter();
-//		}
-//		
-//		//wasn't a player who damaged the dragon
-//		if(slayer == null) return;
-//		
-//		//see if they've killed the dragon before
-//		String id = slayer.getUniqueId().toString();
-//		lastAttacker = slayer;
-//		if(FileManager.getPlayers().contains(id))
-//		{
-//			slayer.sendMessage(ChatColor.GOLD+"Stay your weapon, slayer. Allow someone else to kill the beast!");
-//			event.setDamage(0);; //hopefully this will prevent mcMMO from interferring.
-//			event.setCancelled(true);
-//		}
-//	}
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onBreak(BlockBreakEvent event)
+	{
+		System.out.println("break");
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onRetract(BlockPistonRetractEvent event)
+	{
+		System.out.println("retract");
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onExtend(BlockPistonExtendEvent event)
+	{
+		System.out.println("extend");
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onFade(BlockFadeEvent event)
+	{
+		System.out.println("fade");
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onBurn(BlockBurnEvent event)
+	{
+		System.out.println("burn");
+	}
+	
+	@EventHandler(priority=EventPriority.HIGHEST)
+	public void onFall(EntityChangeBlockEvent event)
+	{
+		if(event.getEntity() instanceof FallingBlock)
+		{
+			System.out.println("falling");
+		}
+	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
 	public void onPlayerMove(PlayerMoveEvent event)
