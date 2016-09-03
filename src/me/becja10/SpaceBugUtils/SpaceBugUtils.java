@@ -16,20 +16,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockBurnEvent;
 import org.bukkit.event.block.BlockDispenseEvent;
-import org.bukkit.event.block.BlockFadeEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -275,51 +267,6 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 			if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
 				if(event.getClickedBlock().getType() == Material.MOB_SPAWNER)
 					event.setCancelled(true);
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onPlace(BlockPlaceEvent event)
-	{
-		System.out.println("place");
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onBreak(BlockBreakEvent event)
-	{
-		System.out.println("break");
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onRetract(BlockPistonRetractEvent event)
-	{
-		System.out.println("retract");
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onExtend(BlockPistonExtendEvent event)
-	{
-		System.out.println("extend");
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onFade(BlockFadeEvent event)
-	{
-		System.out.println("fade");
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onBurn(BlockBurnEvent event)
-	{
-		System.out.println("burn");
-	}
-	
-	@EventHandler(priority=EventPriority.HIGHEST)
-	public void onFall(EntityChangeBlockEvent event)
-	{
-		if(event.getEntity() instanceof FallingBlock)
-		{
-			System.out.println("falling");
-		}
 	}
 	
 	@EventHandler(priority=EventPriority.HIGHEST)
