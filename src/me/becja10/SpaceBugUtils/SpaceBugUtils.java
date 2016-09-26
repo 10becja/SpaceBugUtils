@@ -250,6 +250,59 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
 			}
 		}
+		
+		else if(cmd.getName().equalsIgnoreCase("increasehomes")){
+			if((sender instanceof Player) && (sender.hasPermission("spacebugutils.increasehomes"))){
+				if(args.length != 2)
+					return false;
+				Player p = Bukkit.getPlayer(args[0]);
+				if(p == null)
+					return false;
+				String add = "pex user " + p.getName() + " add essentials.sethome.multiple.";
+				String remove = "pex user " + p.getName() + " remove essentials.sethome.multiple.";
+				switch (args[1]){
+					case "two":
+						runCommand(add + "two");
+						break;
+					case "three":
+						runCommand(remove + "two");
+						runCommand(add + "three");
+						break;
+					case "four":
+						runCommand(remove + "three");
+						runCommand(add + "four");
+						break;
+					case "five":
+						runCommand(remove + "four");
+						runCommand(add + "five");
+						break;
+					case "six":
+						runCommand(remove + "five");
+						runCommand(add + "six");
+						break;
+					case "seven":
+						runCommand(remove + "six");
+						runCommand(add + "seven");
+						break;						
+					case "eight":
+						runCommand(remove + "seven");
+						runCommand(add + "eight");
+						break;
+					case "nine":
+						runCommand(remove + "eight");
+						runCommand(add + "nine");
+						break;
+					case "ten":
+						runCommand(remove + "nine");
+						runCommand(add + "ten");
+						break;						
+				}
+				
+			}
+			else{
+				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
+			}
+		}
 		return true;
 	}
 
@@ -261,7 +314,7 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 		
 		Material inHand = p.getInventory().getItemInMainHand().getType();
 		Material offHand = p.getInventory().getItemInOffHand().getType();
-		//prevent players changing mob spanwers
+		//prevent players changing mob spawners
 		if(inHand == Material.MONSTER_EGG || inHand == Material.MONSTER_EGGS ||
 		   offHand == Material.MONSTER_EGG || offHand == Material.MONSTER_EGGS)
 			if(event.getAction() == Action.RIGHT_CLICK_BLOCK)
@@ -330,6 +383,7 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 	@SuppressWarnings("unused")
 	private void print(String p){System.out.println(p);}
 	public static JavaPlugin getInstance() {return plugin;}
+	private void runCommand(String cmd){Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);}
 }
 
 

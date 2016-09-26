@@ -1,5 +1,5 @@
 name: SpaceBugUtils
-version: 3.0
+version: 3.1
 main: me.becja10.SpaceBugUtils.SpaceBugUtils
 softdepend: [Essentials]
 description: Additional Utilities for play.minecraft.dk
@@ -22,3 +22,6 @@ commands:
     description: Changes someone's nickname.
     usage: /<command> <target> <nickname>
     aliases: [sbn]
+  increasehomes:
+    description: wrapper around increasing number of sethomes
+    usage: /<command> <target> <homeNode>
