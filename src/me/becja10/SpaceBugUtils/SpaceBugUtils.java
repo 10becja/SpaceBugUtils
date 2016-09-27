@@ -252,7 +252,7 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 		}
 		
 		else if(cmd.getName().equalsIgnoreCase("increasehomes")){
-			if((sender instanceof Player) && (sender.hasPermission("spacebugutils.increasehomes"))){
+			if(!(sender instanceof Player) || (sender instanceof Player) && (sender.hasPermission("spacebugutils.increasehomes"))){
 				if(args.length != 2)
 					return false;
 				Player p = Bukkit.getPlayer(args[0]);
