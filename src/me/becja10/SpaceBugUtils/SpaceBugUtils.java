@@ -303,6 +303,28 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
 			}
 		}
+		
+		else if(cmd.getName().equalsIgnoreCase("sayraw")){
+			if(sender instanceof Player && !sender.hasPermission("spacebugutils.sayraw")){
+				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
+				return true;
+			}
+			if(args.length < 1){
+				return false;
+			}
+			
+			String message = "";
+			for(String arg : args){
+				message += arg + " ";
+			}
+			message = message.substring(0, message.length()-1);
+			
+			String colorMessage = ChatColor.translateAlternateColorCodes('&', message);
+			for(Player p : Bukkit.getOnlinePlayers()){
+				p.sendMessage(colorMessage.split("\\\\n"));
+			}
+		}
+		
 		return true;
 	}
 

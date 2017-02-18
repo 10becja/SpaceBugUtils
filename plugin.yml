@@ -25,3 +25,6 @@ commands:
   increasehomes:
     description: wrapper around increasing number of sethomes
     usage: /<command> <target> <homeNode>
+  sayraw:
+    description: Sends the provided message to all online players
+    usage: /sayraw <message>
