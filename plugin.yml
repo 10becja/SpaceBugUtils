@@ -1,5 +1,5 @@
 name: SpaceBugUtils
-version: 3.1
+version: 3.2
 main: me.becja10.SpaceBugUtils.SpaceBugUtils
 softdepend: [Essentials]
 description: Additional Utilities for play.minecraft.dk
@@ -28,3 +28,6 @@ commands:
   sayraw:
     description: Sends the provided message to all online players
     usage: /sayraw <message>
+  showalts:
+    description: Shows all players logged in with the same IP
+    usage: /showalts

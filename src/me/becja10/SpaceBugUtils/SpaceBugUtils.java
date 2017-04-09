@@ -1,5 +1,6 @@
 package me.becja10.SpaceBugUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,12 +17,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -325,6 +328,32 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 			}
 		}
 		
+		else if(cmd.getName().equalsIgnoreCase("showAlts")){
+			if(sender instanceof Player && !sender.hasPermission("spacebugutils.showalts")){
+				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command.");
+			}
+			else{
+				HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+				for(Player p : Bukkit.getOnlinePlayers()){
+					String ip = p.getAddress().getHostString();
+					if(!map.containsKey(ip)){
+						List<String> list = new ArrayList<String>();
+						map.put(ip, list);
+					}
+					map.get(ip).add(p.getName());
+				}
+				sender.sendMessage(ChatColor.BLUE + "These players are currently logged in with the same IP");
+				for(String key : map.keySet()){
+					if(map.get(key).size() > 1){
+						sender.sendMessage("    " + ChatColor.GREEN + key);
+						for(String name : map.get(key)){
+							sender.sendMessage("        " + ChatColor.YELLOW + name);
+						}
+					}
+				}
+			}
+		}
+		
 		return true;
 	}
 
@@ -402,8 +431,19 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 			event.setMessage(msg.toLowerCase());
 	}
 	
-	@SuppressWarnings("unused")
+	@EventHandler(priority=EventPriority.NORMAL)
+	public void onEntityTarget(EntityTargetLivingEntityEvent event){
+		//prevent excessively large XP orbs from merging and overflowing, becoming negative and breaking items
+		if(event.getEntity() instanceof ExperienceOrb){
+			ExperienceOrb orb = (ExperienceOrb) event.getEntity();
+			if(orb.getExperience() < 1)
+				orb.setExperience(7);
+		}
+	}
+	
 	private void print(String p){System.out.println(p);}
+	@SuppressWarnings("unused")
+	private void print(int i){print(i + "");}
 	public static JavaPlugin getInstance() {return plugin;}
 	private void runCommand(String cmd){Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);}
 }
