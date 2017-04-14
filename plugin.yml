@@ -1,5 +1,5 @@
 name: SpaceBugUtils
-version: 3.2
+version: 3.3
 main: me.becja10.SpaceBugUtils.SpaceBugUtils
 softdepend: [Essentials]
 description: Additional Utilities for play.minecraft.dk
@@ -31,3 +31,6 @@ commands:
   showalts:
     description: Shows all players logged in with the same IP
     usage: /showalts
+  namecolor:
+    description: Changes the color of your name using PEX prefix
+    usage: /namecolor <color code>

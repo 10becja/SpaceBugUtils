@@ -354,6 +354,25 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 			}
 		}
 		
+		else if(cmd.getName().equalsIgnoreCase("namecolor")){
+			if(!(sender instanceof Player) || args.length != 1)
+				return false;
+			Player p = (Player) sender;
+			String color = args[0];
+			if(color.matches("[0-9a-fA-F]") && color.length() == 1){
+				if(sender.hasPermission("spacebugutils." + color)){
+					runCommand("pex user " + p.getName() + " prefix &" + color);
+					sender.sendMessage(ChatColor.GREEN + "Your name's color has been changed.");
+				}
+				else{
+					sender.sendMessage(ChatColor.RED + "You don't have permission for this color");
+				}
+			}
+			else{
+				sender.sendMessage(ChatColor.RED + "This is not an acceptable color code. Please enter 0-9 or a-f");
+			}
+		}
+		
 		return true;
 	}
 
