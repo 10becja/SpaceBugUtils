@@ -21,12 +21,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockDispenseEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -289,7 +291,7 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 		}
 		
 		else if(cmd.getName().equalsIgnoreCase("increasehomes")){
-			if((sender instanceof Player) && (sender.hasPermission("spacebugutils.increasehomes"))){
+			if(!(sender instanceof Player) || (sender instanceof Player) && (sender.hasPermission("spacebugutils.increasehomes"))){
 				if(args.length != 2)
 					return false;
 				Player p = Bukkit.getPlayer(args[0]);
@@ -340,6 +342,73 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
 			}
 		}
+		
+		else if(cmd.getName().equalsIgnoreCase("sayraw")){
+			if(sender instanceof Player && !sender.hasPermission("spacebugutils.sayraw")){
+				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command!");
+				return true;
+			}
+			if(args.length < 1){
+				return false;
+			}
+			
+			String message = "";
+			for(String arg : args){
+				message += arg + " ";
+			}
+			message = message.substring(0, message.length()-1);
+			
+			String colorMessage = ChatColor.translateAlternateColorCodes('&', message);
+			for(Player p : Bukkit.getOnlinePlayers()){
+				p.sendMessage(colorMessage.split("\\\\n"));
+			}
+		}
+		
+		else if(cmd.getName().equalsIgnoreCase("showAlts")){
+			if(sender instanceof Player && !sender.hasPermission("spacebugutils.showalts")){
+				sender.sendMessage(ChatColor.RED + "You are not allowed to use this command.");
+			}
+			else{
+				HashMap<String, List<String>> map = new HashMap<String, List<String>>();
+				for(Player p : Bukkit.getOnlinePlayers()){
+					String ip = p.getAddress().getHostString();
+					if(!map.containsKey(ip)){
+						List<String> list = new ArrayList<String>();
+						map.put(ip, list);
+					}
+					map.get(ip).add(p.getName());
+				}
+				sender.sendMessage(ChatColor.BLUE + "These players are currently logged in with the same IP");
+				for(String key : map.keySet()){
+					if(map.get(key).size() > 1){
+						sender.sendMessage("    " + ChatColor.GREEN + key);
+						for(String name : map.get(key)){
+							sender.sendMessage("        " + ChatColor.YELLOW + name);
+						}
+					}
+				}
+			}
+		}
+		
+		else if(cmd.getName().equalsIgnoreCase("namecolor")){
+			if(!(sender instanceof Player) || args.length != 1)
+				return false;
+			Player p = (Player) sender;
+			String color = args[0];
+			if(color.matches("[0-9a-fA-F]") && color.length() == 1){
+				if(sender.hasPermission("spacebugutils." + color)){
+					runCommand("pex user " + p.getName() + " prefix &" + color);
+					sender.sendMessage(ChatColor.GREEN + "Your name's color has been changed.");
+				}
+				else{
+					sender.sendMessage(ChatColor.RED + "You don't have permission for this color");
+				}
+			}
+			else{
+				sender.sendMessage(ChatColor.RED + "This is not an acceptable color code. Please enter 0-9 or a-f");
+			}
+		}
+		
 		return true;
 	}
 
@@ -424,8 +493,19 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 		event.setMessage(msg);
 	}
 	
-	@SuppressWarnings("unused")
+	@EventHandler(priority=EventPriority.NORMAL)
+	public void onEntityTarget(EntityTargetLivingEntityEvent event){
+		//prevent excessively large XP orbs from merging and overflowing, becoming negative and breaking items
+		if(event.getEntity() instanceof ExperienceOrb){
+			ExperienceOrb orb = (ExperienceOrb) event.getEntity();
+			if(orb.getExperience() < 1)
+				orb.setExperience(7);
+		}
+	}
+	
 	private void print(String p){System.out.println(p);}
+	@SuppressWarnings("unused")
+	private void print(int i){print(i + "");}
 	public static JavaPlugin getInstance() {return plugin;}
 	private void runCommand(String cmd){Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), cmd);}
 }
