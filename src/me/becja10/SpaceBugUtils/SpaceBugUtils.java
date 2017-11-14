@@ -1,5 +1,8 @@
 package me.becja10.SpaceBugUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +19,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Dispenser;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -39,9 +44,37 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 {
 	public final Logger logger = Logger.getLogger("Minecraft");
 	private static SpaceBugUtils plugin;
-
+	
 	private Map<String, Long> joined = new HashMap<String, Long>();
 	private List<String> list = new LinkedList<String>();
+	private String stars = "*********************************************************";
+	
+	private String configPath;
+	private FileConfiguration config;
+	private FileConfiguration outConfig;
+	
+	private List<String> badWords; private String _badWords = "List of filtered words";
+	
+	private void loadConfig(){
+		configPath = this.getDataFolder().getAbsolutePath() + File.separator + "config.yml";
+		config = YamlConfiguration.loadConfiguration(new File(configPath));
+		outConfig = new YamlConfiguration();	
+		
+		if(config.contains(_badWords))
+			badWords = config.getStringList(_badWords);
+		else
+			badWords = new ArrayList<String>();
+		
+		outConfig.set(_badWords, badWords);
+		
+		saveConfig(outConfig, configPath);
+	}
+	
+	private void saveConfig(FileConfiguration config, String path)
+	{
+        try{config.save(path);}
+        catch(IOException exception){logger.info("Unable to write to the configuration file at \"" + path + "\"");}
+	}
 
 	public void onEnable()
 	{
@@ -49,12 +82,16 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 		this.logger.info(pdfFile.getName() + " Version " + pdfFile.getVersion() + " Has Been Enabled!");
 		getServer().getPluginManager().registerEvents(this, this);
 		plugin = this;
+		
+		loadConfig();
 	}
 
 	public void onDisable()
 	{
 		PluginDescriptionFile pdfFile = getDescription();
 		this.logger.info(pdfFile.getName() + " Has Been Disabled!");
+		
+		saveConfig();
 	}
 	
 	@EventHandler
@@ -194,7 +231,7 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 					sender.sendMessage(ChatColor.DARK_RED+"No permission.");
 			else
 			{
-				
+				loadConfig();
  			}
 		}
 		
@@ -362,7 +399,7 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 	@EventHandler(priority=EventPriority.LOWEST)
 	public void onChat(AsyncPlayerChatEvent event)
 	{
-		//don't lower mods/admins
+		//don't lower/filter mods/admins
 		if(event.getPlayer().hasPermission("spacebugutils.chat")) return;
 		String msg = event.getMessage();
 		//loop over msg and count caps
@@ -377,7 +414,14 @@ public class SpaceBugUtils extends JavaPlugin implements Listener
 		}
 		//if more than half the characters are caps, make them lower case
 		if ((double) caps/low > 1 && msg.length() > 5)
-			event.setMessage(msg.toLowerCase());
+			msg = msg.toLowerCase();
+		
+		for(String word : badWords){
+			String replace = stars.substring(0, word.length());
+			msg = msg.replace(word, replace);
+		}
+		
+		event.setMessage(msg);
 	}
 	
 	@SuppressWarnings("unused")
